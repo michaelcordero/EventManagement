@@ -1,8 +1,7 @@
 import java.io.*;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class SeatingType {
 
@@ -269,7 +268,7 @@ public class SeatingType {
     private String[][][] convertStringtoArray(String stringArray)
     {
 
-        String[][][] sampleStringArray = new String[][][] {{{"unsold", "regular1"}, {"unsold", "regular2"}}, {{"unsold", "regular3"}, {"unsold", "regular4"}}};
+        String[][][] sampleStringArray = new String[][][] {{{"unsold", "regular"}, {"unsold", "regular"}}, {{"unsold", "regular"}, {"unsold", "regular"}}};
 
         // todo - Overridden during testing
         stringArray = Arrays.deepToString(sampleStringArray);
@@ -285,8 +284,6 @@ public class SeatingType {
 
         String values = "";
 
-        // Array storing Row objects
-        ArrayList<Row> rowArray = new ArrayList<>();
 
         for(int i = 0; i < stringArray.length();i++){
 
@@ -319,12 +316,6 @@ public class SeatingType {
                     }
 
                     System.out.println("Opened at: " + lastArrayStart);
-                    if(lastArrayStart == 1){
-                        System.out.println("Opening a ROW");
-                        // Create a new Row object and append it to the rowArray
-                        rowArray.add(new Row());
-                        //rowArray.add((new Row()).toString());
-                    }
 
                 } else if(stringArray.charAt(i) == ']'){
 
@@ -333,32 +324,22 @@ public class SeatingType {
 
                     System.out.println("Closed at: " + lastArrayStart);
 
-                    if(lastArrayStart == 1){
-                        System.out.println("Closed a ROW");
-                    }
-
                     if(!values.equals("")) {
-//                        int indexToUse = (valuesArray.size() - 1);
-//                        if (indexToUse < 0){
-//                            indexToUse = 0;
-//                        }
+                        int indexToUse = (valuesArray.size() - 1);
+                        if (indexToUse < 0){
+                            indexToUse = 0;
+                        }
 
-                        // Values for seat are separated by \s at this point so split
-                        // todo - Note: if a single seat attribute is multi word, this will bug out
-                        String[] seatProperties = values.split(" ");
+                        String[] splitString = values.split(" ");
 
-                        // Create a new Seat and set it to the last row object in the rowArray
-                        //new Seat(seatProperties[0], seatProperties[1]);
+                        // Array
+                        ArrayList arr = new ArrayList();
+                        for(int j =0; j < splitString.length; j++){
 
-                        System.out.println("Getting the last element in rowArray");
-                        //System.out.println(rowArray.get((rowArray.size() - 1)));
+                            arr.add(splitString[j]);
 
-                        Row currentRow = rowArray.get((rowArray.size() - 1));
-
-                        currentRow.setSeat(new Seat(seatProperties[0], seatProperties[1]));
-
-                        System.out.println(currentRow);
-
+                        }
+                        valuesArray.add(arr);
                     }
 
                     // now Reset values since a new element is starting
@@ -366,7 +347,26 @@ public class SeatingType {
 
                     lastArrayStart--;
 
-                }
+                } /*else if(stringArray.charAt(i) == ','){
+
+                    // Report the values variable in its current state
+                    System.out.println(values);
+
+                    System.out.println("Continues at: " + lastArrayStart);
+
+                    if(!values.equals("")) {
+
+                        int indexToUse = (valuesArray.size() - 1);
+                        if (indexToUse < 0){
+                            indexToUse = 0;
+                        }
+                        valuesArray.add(indexToUse, values);
+                    }
+
+                    // now Reset values since a new element is starting
+                    values = "";
+
+                }*/
 
             }
 
@@ -377,7 +377,8 @@ public class SeatingType {
         System.out.println("Array String Value: " + values);
         System.out.println("Dimensions in Structure: " + dimensions);
         System.out.println("Values in Structure: " + valuesArray);
-        System.out.println("Values in Row Array: " + rowArray);
+
+
 
         return sampleStringArray;
 
@@ -438,6 +439,27 @@ public class SeatingType {
 
         return false;
 
+    }
+
+    public static void convert(String input, Character open, Character close) {
+        Stack<Character> parser = new Stack<>();
+        List<Character> list = input.chars().mapToObj(i -> (char) i).collect(Collectors.toList();
+        List<Row> rows = new ArrayList<Row>();
+        String nonSymbolic = new String();
+        HashMap<Seat.Attributes,String> seatAttributesMap = new HashMap<>();
+        for (Character a : list) {
+            if (a == open){
+                parser.push(a);
+            } else if (a == close && parser.peek() == open) {
+                Character topElement = parser.pop();
+                System.out.println(topElement);
+            } else {
+                nonSymbolic += a;
+            }
+        }
+
+        String [] values = nonSymbolic.split(",");
+        Seat seat = new Seat(Seat.mapping(values));
     }
 
 }
